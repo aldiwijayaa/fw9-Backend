@@ -1,10 +1,14 @@
-const transactions = require('express').Router();
+const trans = require('express').Router();
 
-transactions.get('/', (req, res) => {
-    return res.json({
-        success: true,
-        message: 'List all transactions',
-    });
-});
+const transController = require('../controller/transaction');
 
-module.exports = transactions;
+
+
+trans.patch('/:id', transController.updateTrans);
+trans.delete('/:id', transController.deleteTrans);
+trans.get('/', transController.getAllTrans);
+trans.get('/:id', transController.detailTrans);
+trans.post('/', transController.createTrans);
+
+
+module.exports = trans ;

@@ -1,10 +1,13 @@
 const users = require('express').Router();
 
-users.get('/', (req, res) => {
-    return res.json({
-        success: true,
-        message: 'List all users',
-    });
-});
+const userController = require('../controller/user');
 
-module.exports = users;
+users.get('/', userController.getAllUser);
+users.post('/', userController.createUser);
+users.patch('/:id', userController.editUser);
+users.delete('/:id', userController.deleteUser);
+users.get('/:id', userController.detailUser);
+
+
+
+module.exports = users ;
