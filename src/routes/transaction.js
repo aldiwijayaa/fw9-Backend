@@ -1,10 +1,14 @@
-const transactions = require('express').Router();
+const trans = require('express').Router();
 
-const transactionsController = require('../controllers/transactions');
+const transController = require('../controllers/transactions');
 
-transactions.get('/', transactionsController.getAllTransactions);
-transactions.post('/', transactionsController.createTransactions);
-transactions.patch('/:id', transactionsController.editTransactions);
-transactions.delete('/:id', transactionsController.deleteTransactions);
 
-module.exports = transactions;
+
+trans.patch('/:id', transController.updateTrans);
+trans.delete('/:id', transController.deleteTrans);
+trans.get('/', transController.getAllTrans);
+trans.get('/:id', transController.detailTrans);
+trans.post('/', transController.createTrans);
+
+
+module.exports = trans ;

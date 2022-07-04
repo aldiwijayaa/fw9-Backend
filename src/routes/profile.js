@@ -1,10 +1,13 @@
 const profile = require('express').Router();
 
-const profileController = require('../controllers/profile');
+const profielController = require('../controllers/profile');
 
-profile.get('/', profileController.getAllProfile);
-profile.post('/', profileController.createProfile);
-profile.patch('/:id', profileController.editProfile);
-profile.delete('/:id', profileController.deleteProfile);
+profile.get('/:id', profielController.detailProfile);
+profile.post('/', profielController.createProfile);
+profile.patch('/:id', profielController.updateProfile);
+profile.delete('/:id', profielController.deleteProfile);
+profile.get('/', profielController.getAllProfile);
 
-module.exports = profile;
+
+
+module.exports = profile ;
