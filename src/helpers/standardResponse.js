@@ -1,4 +1,4 @@
-const response = (res, msg, results, status = 200) => {
+const response = (res, msg, result, pageInfo, status = 200) => {
     let success = true;
     if (status >= 400) {
         success = false;
@@ -7,9 +7,15 @@ const response = (res, msg, results, status = 200) => {
         success,
         message: msg,
     };
-    if (res) {
-        data.results = results;
+
+    if (pageInfo) {
+        data.pageInfo = pageInfo;
     }
+
+    if (result) {
+        data.result = result;
+    }
+
     return res.status(status).json(data);
 };
 
