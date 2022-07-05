@@ -49,3 +49,14 @@ exports.deleteUser = (id, cb) => {
         cb(res.rows);
     });
 };
+
+exports.detailUser = (id, cb) => {
+    const quer = 'SELECT username, email, password, pin FROM users WHERE id=$1';
+    const value = [id];
+    db.query(quer, value, (err, res)=>{
+        if(err) {
+            throw err;
+        }
+        cb(res.rows);
+    });
+};

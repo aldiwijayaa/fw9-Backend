@@ -57,3 +57,15 @@ exports.deleteUser = (req, res) => {
         return response(res, 'User deleted', result[0]);
     });
 };
+
+exports.detailUser = (req, res)=>{
+    const {id} =req.params;
+    usersModels.detailUser(id, (result)=>{
+    //console.log(results.length);
+        if(result.length > 0 ){
+            return response(res, 'This Users Details', result[0]); 
+        }else{
+            return res.redirect('/404');
+        }
+    });
+};

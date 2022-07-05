@@ -19,5 +19,6 @@ users.get('/', body('limit').toInt(), body('page').toInt(), usersController.getA
 users.post('/', ...userValidation, usersController.creatUsers);
 users.patch('/:id', ...userValidation, usersController.editUser);
 users.delete('/:id', usersController.deleteUser);
+users.get('/:id', usersController.detailUser);
 
 module.exports = users;
