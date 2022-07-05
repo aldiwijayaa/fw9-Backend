@@ -1,35 +1,54 @@
 const response = require('../helpers/standardResponse');
-const transModel = require('../models/transactions');
+const transactionModels = require('../models/transactions');
+const { validationResult } = require('express-validator');
+const errorResponse = require('../helpers/errorResponse');
 
-exports.getAllTrans= (req, res)=>{
-    transModel.getAllTrans((results)=>{
-        return response(res, 'Get All Trans success', results);
+exports.getAllTransaction = (req, res) => {
+    transactionModels.getAllTransactions((result) => {
+        return response(res, 'List all transaction', result);
     });
 };
 
-exports.detailTrans = (req, res)=>{
-    const {id} =req.params;
-    transModel.detailTrans(id, (results)=>{
-        return response(res, 'This Transaction Details', results);
+exports.getTransactionById = (req, res) => {
+    const { id } = req.params;
+    transactionModels.getTransactionById(id, (err, result) => {
+        if (result.rows.length > 0) {
+            return response(res, 'Detail transaction', result.rows[0]);
+        } else {
+            return res.redirect('/404');
+        }
     });
 };
 
-exports.createTrans = (req, res)=>{
-    transModel.createTrans(req.body, (results)=>{
-        return response(res, 'Post Transaction success', results);
+exports.createTransaction = (req, res) => {
+    const validation = validationResult(req);
+    if (!validation.isEmpty()) {
+        return response(res, 'Error occured', validation.array(), 400);
+    }
+    transactionModels.createTransaction(req.body, (err, result) => {
+        if (err) {
+            return errorResponse(err, res);
+        } else {
+            return response(res, 'Transaction created', result);
+        }
     });
 };
 
-exports.updateTrans = (req, res)=>{
-    const {id} =req.params;
-    transModel.updateTrans(id, req.body, (results)=>{
-        return response(res, 'update data success', results[0]);
+exports.editTransaction = (req, res) => {
+    const { id } = req.params;
+    transactionModels.editTransaction(id, req.body, (err, result) => {
+        if (err) {
+            console.log(err);
+            return errorResponse(err, res);
+        } else {
+            return response(res, 'Edit transaction successfully', result[0]);
+        }
     });
 };
 
-exports.deleteTrans = (req, res)=>{
-    const {id} =req.params;
-    transModel.deleteTrans(id, (results)=>{
-        return response(res, 'Delete Transaction success', results[0]);
+exports.deleteTransaction = (req, res) => {
+    const { id } = req.params;
+    transactionModels.deleteTransaction(id, (result) => {
+        return response(res, 'Transaction deleted', result[0]);
     });
 };

@@ -1,56 +1,47 @@
-const db = require('../helpers/db.js');
+const db = require('../helpers/db');
 
-exports.getAllTrans = (cb) => {
+exports.getAllTransactions = (cb) => {
     db.query('SELECT * FROM transaction ORDER BY id ASC', (err, res) => {
-        if(err) {
-            throw err;
-        }
         cb(res.rows);
     });
 };
 
-exports.detailTrans = (id, cb) => {
-    const quer = 'SELECT amount, time_date, note, id_user, id_profile, typetrans_id expanse FROM transaction WHERE id=$1';
-    const value = [id];
-    db.query(quer, value, (err, res)=>{
-        if(err) {
-            throw err;
-        }
-        cb(res.rows);
+exports.getTransactionById = (id, cb) => {
+    db.query('SELECT * FROM transaction WHERE id=$1', [id], (err, res) => {
+        cb(err, res);
     });
 };
 
-exports.createTrans = (data, cb)=>{
-    const quer = 'INSERT INTO transaction(amount, time_date, note, id_user, id_profile, typetrans_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *';
-    const value = [data.amount, data.time_date, data.note, data.id_user, data.id_profile, data.typetrans_id];
-    db.query(quer, value, (err, res)=>{
-        console.log(value);
-        if(err) {
-            //throw err;
+exports.createTransaction = (data, cb) => {
+    const query = 'INSERT INTO transaction(amount, recipient_id, sender_id, notes, time, type_id) VALUES($1, $2, $3, $4, $5, $6) RETURNING *';
+    const values = [data.amount, data.recipient_id, data.sender_id, data.notes, data.time, data.type_id];
+    db.query(query, values, (err, res) => {
+        if (err) {
+            cb(err);
+        } else {
+            cb(err, res.rows);
+        }
+    });
+};
+
+exports.editTransaction = (id, data, cb) => {
+    const query = 'UPDATE transaction SET amount=$1, recipient_id=$2, sender_id=$3, notes=$4, time=$5, type_id=$6 WHERE id=$7 RETURNING *';
+    const value = [data.amount, data.recipient_id, data.sender_id, data.notes, data.time, data.type_id, id];
+    db.query(query, value, (err, res) => {
+        if (res) {
+            // console.log(res);
+            cb(err, res.rows);
+        } else {
             console.log(err);
+            cb(err);
         }
-        cb(res.rows);
     });
 };
 
-exports.updateTrans = (id, data, cb)=>{
-    const quer = 'UPDATE transaction SET amount=$1, time_date=$2, note=$3, id_user=$4, id_profile=$5, typetrans_id=$6 WHERE id=$7 RETURNING *';
-    const value = [data.amount, data.time_date, data.note, data.id_user, data.id_profile, data.typetrans_id, id];
-    db.query(quer, value, (err, res)=>{
-        if(err) {
-            throw err;
-        }
-        cb(res.rows);
-    }) ;
-};
-
-exports.deleteTrans = (id, cb) => {
-    const quer = 'DELETE FROM transaction WHERE id=$1 RETURNING *';
+exports.deleteTransaction = (id, cb) => {
+    const query = 'DELETE FROM transaction WHERE id=$1 RETURNING *';
     const value = [id];
-    db.query(quer, value, (err, res)=>{
-        if(err) {
-            throw err;
-        }
+    db.query(query, value, (err, res) => {
         cb(res.rows);
     });
 };

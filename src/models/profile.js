@@ -1,56 +1,47 @@
-const db = require('../helpers/db.js');
-
-exports.detailProfile = (id, cb) => {
-    const quer = 'SELECT fullname, picture, phone, id_user, balance, income, expanse FROM profile WHERE id=$1';
-    const value = [id];
-    db.query(quer, value, (err, res)=>{
-        if(err) {
-            throw err;
-        }
-        cb(res.rows);
-    });
-};
-
-exports.createProfile = (data, cb)=>{
-    const quer = 'INSERT INTO profile(fullname, picture, phone, id_user, balance, income, expanse) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *';
-    const value = [data.fullname, data.picture, data.phone, data.id_user, data.balance, data.income, data.expanse];
-    db.query(quer, value, (err, res)=>{
-        console.log(res);
-        if(err) {
-            throw err;
-        }
-        cb(res.rows);
-    });
-};
-
-exports.updateProfile = (id, data, cb)=>{
-    const quer = 'UPDATE profile SET fullname=$1, picture=$2, phone=$3, id_user=$4, balance=$5, income=$6, expanse=$7 WHERE id=$8 RETURNING *';
-    const value = [data.fullname, data.picture, data.phone, data.id_user, data.balance, data.income, data.expanse, id];
-    db.query(quer, value, (err, res)=>{
-    //console.log(res);
-        if(err) {
-            throw err;
-        }
-        cb(res.rows);
-    }) ;
-};
-
-exports.deleteProfile = (id, cb) => {
-    const quer = 'DELETE FROM profile WHERE id=$1 RETURNING *';
-    const value = [id];
-    db.query(quer, value, (err, res)=>{
-        if(err) {
-            throw err;
-        }
-        cb(res.rows);
-    });
-};
+const db = require('../helpers/db');
 
 exports.getAllProfile = (cb) => {
     db.query('SELECT * FROM profile ORDER BY id ASC', (err, res) => {
-        if(err) {
-            throw err;
+        cb(res.rows);
+    });
+};
+
+exports.getProfileById = (id, cb) => {
+    db.query('SELECT * FROM profile WHERE id=$1', [id], (err, res) => {
+        cb(err, res);
+    });
+};
+
+exports.createProfile = (data, cb) => {
+    const query = 'INSERT INTO profile(fullname, balance, picture, user_id, phone_number) VALUES($1, $2, $3, $4, $5) RETURNING *';
+    const values = [data.fullname, data.balance, data.picture, data.user_id, data.phone_number];
+    db.query(query, values, (err, res) => {
+        if (err) {
+            cb(err);
+        } else {
+            cb(err, res.rows);
         }
+    });
+};
+
+exports.editProfile = (id, data, cb) => {
+    const query = 'UPDATE profile SET fullname=$1, balance=$2, picture=$3, user_id=$4, phone_number=$5 WHERE id=$6 RETURNING *';
+    const value = [data.fullname, data.balance, data.picture, data.user_id, data.phone_number, id];
+    db.query(query, value, (err, res) => {
+        if (res) {
+            // console.log(res);
+            cb(err, res.rows);
+        } else {
+            console.log(err);
+            cb(err);
+        }
+    });
+};
+
+exports.deleteProfile = (id, cb) => {
+    const query = 'DELETE FROM profile WHERE id=$1 RETURNING *';
+    const value = [id];
+    db.query(query, value, (err, res) => {
         cb(res.rows);
     });
 };

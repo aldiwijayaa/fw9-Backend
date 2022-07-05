@@ -1,36 +1,54 @@
 const response = require('../helpers/standardResponse');
-const profileModel = require('../models/profile');
+const profileModels = require('../models/profile');
+const { validationResult } = require('express-validator');
+const errorResponse = require('../helpers/errorResponse');
 
-
-exports.detailProfile = (req, res)=>{
-    const {id} =req.params;
-    profileModel.detailProfile(id, (results)=>{
-        return response(res, 'This Profile Details', results);
+exports.getAllProfile = (req, res) => {
+    profileModels.getAllProfile((result) => {
+        return response(res, 'message from standard response: request success', result);
     });
 };
 
-exports.createProfile = (req, res)=>{
-    profileModel.createProfile(req.body, (results)=>{
-        return response(res, 'Post Profile success', results);
+exports.getProfileById = (req, res) => {
+    const { id } = req.params;
+    profileModels.getProfileById(id, (err, result) => {
+        if (result.rows.length > 0) {
+            return response(res, 'Detail transaction', result.rows[0]);
+        } else {
+            return res.redirect('/404');
+        }
     });
 };
 
-exports.updateProfile = (req, res)=>{
-    const {id} =req.params;
-    profileModel.updateProfile(id, req.body, (results)=>{
-        return response(res, 'update data success', results[0]);
+exports.createProfile = (req, res) => {
+    const validation = validationResult(req);
+    if (!validation.isEmpty()) {
+        return response(res, 'Error occured', validation.array(), 400);
+    }
+    profileModels.createProfile(req.body, (err, result) => {
+        if (err) {
+            return errorResponse(err, res);
+        } else {
+            return response(res, 'Profile created', result);
+        }
     });
 };
 
-exports.deleteProfile = (req, res)=>{
-    const {id} =req.params;
-    profileModel.deleteProfile(id, (results)=>{
-        return response(res, 'Delete Profile success', results[0]);
+exports.editProfile = (req, res) => {
+    const { id } = req.params;
+    profileModels.editProfile(id, req.body, (err, result) => {
+        if (err) {
+            console.log(err);
+            return errorResponse(err, res);
+        } else {
+            return response(res, 'Edit profile successfully', result[0]);
+        }
     });
 };
 
-exports.getAllProfile = (req, res)=>{
-    profileModel.getAllProfile((results)=>{
-        return response(res, 'Get All Profile success', results);
+exports.deleteProfile = (req, res) => {
+    const { id } = req.params;
+    profileModels.deleteProfile(id, (result) => {
+        return response(res, 'Profile deleted', result[0]);
     });
 };
