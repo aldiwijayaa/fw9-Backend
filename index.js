@@ -3,6 +3,8 @@ const express = require('express');
 const app = express();
 const routerNavigation = require('./src/routes');
 
+global.__basepath = __dirname;
+
 app.use(express.urlencoded({ extended: false }));
 
 app.get('/', (req, res) => {

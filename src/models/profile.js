@@ -13,9 +13,9 @@ exports.getProfileById = (id, cb) => {
 };
 
 exports.createProfile = (data, cb) => {
-    const query = 'INSERT INTO profile(fullname, balance, picture, user_id, phone_number) VALUES($1, $2, $3, $4, $5) RETURNING *';
-    const values = [data.fullname, data.balance, data.picture, data.user_id, data.phone_number];
-    db.query(query, values, (err, res) => {
+    const query = 'INSERT INTO profile(fullname, phonenumber, balance, picture, user_id) VALUES($1, $2, $3, $4, $5) RETURNING *';
+    const value = [data.fullname,data.phonenumber, data.balance, data.picture, data.user_id ];
+    db.query(query, value, (err, res) => {
         if (err) {
             cb(err);
         } else {
@@ -25,11 +25,11 @@ exports.createProfile = (data, cb) => {
 };
 
 exports.editProfile = (id, data, cb) => {
-    const query = 'UPDATE profile SET fullname=$1, balance=$2, picture=$3, user_id=$4, phone_number=$5 WHERE id=$6 RETURNING *';
-    const value = [data.fullname, data.balance, data.picture, data.user_id, data.phone_number, id];
+    const query = 'UPDATE profile SET fullname=$1, phone_number=$2, balance=$3, picture=$4, user_id=$5 WHERE id=$6 RETURNING *';
+    const value = [data.fullname, data.phone_number, data.balance, data.picture, data.user_id, id];
     db.query(query, value, (err, res) => {
         if (res) {
-            // console.log(res);
+            console.log(res.rows);
             cb(err, res.rows);
         } else {
             console.log(err);

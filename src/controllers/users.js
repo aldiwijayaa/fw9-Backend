@@ -28,7 +28,7 @@ exports.creatUsers = (req, res) => {
     const validation = validationResult(req);
     if (!validation.isEmpty()) {
     // is empty menandakan tidak ada error
-        console.log(validation.array());
+        // console.log(validation.array());
         return response(res, 'Error occured', validation.array(), null, 400);
     }
     usersModels.createUsers(req.body, (err, result) => {
