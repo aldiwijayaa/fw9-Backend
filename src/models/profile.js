@@ -1,8 +1,16 @@
 const db = require('../helpers/db');
 
-exports.getAllProfile = (cb) => {
-  db.query('SELECT * FROM profile ORDER BY id ASC', (err, res) => {
+exports.getAllProfile = (limit, search, offset, sortBy, cb) => {
+  db.query(`SELECT * FROM profile WHERE fullname LIKE '%${search}%' ORDER BY fullname ${sortBy} LIMIT $1 OFFSET ${offset}`, [limit], (err, res) => {
+    console.log('ini dari modal', err);
     cb(res.rows);
+  });
+};
+
+exports.countAllProfile = (keyword, cb) => {
+  console.log('ini dari modal count', keyword);
+  db.query(`SELECT * FROM profile WHERE fullname LIKE '%${keyword}%'`, (err, res) => {
+    cb(err, res.rowCount);
   });
 };
 
@@ -70,7 +78,6 @@ exports.editProfile = (id, data, picture, cb) => {
   const query = `UPDATE profile SET ${finalResult}  WHERE id=$1 or user_id=$1 RETURNING *`;
   db.query(query, val, (err, res) => {
     if (res) {
-      // console.log(res);
       cb(err, res.rows);
     } else {
       console.log(err);
@@ -83,7 +90,6 @@ exports.increaseBalance = (val, data, cb) => {
   const query = `UPDATE profile SET balance=balance + $1 WHERE user_id=$2 RETURNING *`;
   const values = [val, data];
   db.query(query, values, (err, res) => {
-    // console.log(res.rows);
     if (err) {
       cb(err);
     } else {
@@ -96,7 +102,6 @@ exports.decreaseBalance = (val, data, cb) => {
   const query = `UPDATE profile SET balance=balance - $1 WHERE user_id=$2 RETURNING *`;
   const values = [val, data];
   db.query(query, values, (err, res) => {
-    // console.log(res.rows);
     if (err) {
       cb(err);
     } else {
@@ -110,7 +115,6 @@ exports.changePhoneNumber = (id, data, cb) => {
   const query = `UPDATE profile SET phone_number=$2 WHERE user_id=$1 RETURNING phone_number`;
   db.query(query, val, (err, res) => {
     if (res) {
-      // console.log(res);
       cb(err, res.rows[0]);
     } else {
       console.log(err);
@@ -123,7 +127,6 @@ exports.deleteProfile = (id, cb) => {
   const query = 'DELETE FROM profile WHERE id=$1 RETURNING *';
   const value = [id];
   db.query(query, value, (err, res) => {
-    // console.log(res);
     cb(res.rows);
   });
 };

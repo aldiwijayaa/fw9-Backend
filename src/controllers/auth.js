@@ -11,7 +11,6 @@ const upload = require('../helpers/upload').single('picture');
 exports.register = (req, res) => {
   const validation = validationResult(req);
   if (!validation.isEmpty()) {
-    // is empty menandakan tidak ada error
     console.log(validation.array());
     return response(res, 'Error occured', validation.array(), null, 400);
   }
@@ -20,7 +19,6 @@ exports.register = (req, res) => {
     if (err) {
       return errorResponse(err, res);
     }
-    // console.log(userResult[0].id);
     profileModel.createProfileAfterRegister(userResult[0].id, (err, result) => {
       return response(res, 'wkwkwk', userResult);
     });
@@ -30,7 +28,6 @@ exports.register = (req, res) => {
 exports.createPin = (req, res) => {
   const validation = validationResult(req);
   if (!validation.isEmpty()) {
-    // is empty menandakan tidak ada error
     console.log(validation.array());
     return response(res, 'Error occured', validation.array(), null, 400);
   }
@@ -38,7 +35,6 @@ exports.createPin = (req, res) => {
   userModel.getUserByEmail(email, (err, result) => {
     if (result.rows.length > 0) {
       const user = result.rows[0];
-      // console.log(user);
       if (result.rows[0].pin === null) {
         userModel.updateUser(user.id, { pin: req.body.pin }, (req, resultUpdate) => {
           const userUpdated = resultUpdate;
@@ -70,7 +66,6 @@ exports.login = (req, res) => {
     bcrypt
       .compare(password, user.password)
       .then((cpRes) => {
-        // console.log(cpRes);
         if (cpRes) {
           const token = jwt.sign({ id: user.id }, process.env.APP_SECRET || 'mYF1rStb4ck3nd');
           return response(res, 'Login success', { token });
@@ -88,7 +83,6 @@ exports.login = (req, res) => {
 exports.getUserData = (req, res) => {
   const id = req.authUser.id;
   profileModel.getProfileByUserId(id, (err, result) => {
-    // console.log(result);
     if (result.rows.length > 0) {
       return response(res, 'Detail user', result.rows[0]);
     } else {
@@ -146,17 +140,14 @@ exports.editProfile = (req, res) => {
 exports.changePassword = (req, res) => {
   const validation = validationResult(req);
   if (!validation.isEmpty()) {
-    // is empty menandakan tidak ada error
     console.log(validation.array());
     return response(res, 'Error occured', validation.array(), null, 400);
   }
   const { id } = req.authUser;
   const { password } = req.body;
   userModel.getUserById(id, (err, result) => {
-    // console.log(result.rows[0]);
     const user = result.rows[0];
     bcrypt.compare(password, user.password).then((cpRes) => {
-      // console.log(cpRes);
       if (cpRes) {
         userModel.changePassword(id, req.body.newpassword, (err, result) => {
           console.log(result);
@@ -167,7 +158,6 @@ exports.changePassword = (req, res) => {
           }
         });
       } else {
-        // console.log(cpRes);
         return response(res, 'Email or password not match', null, null, 404);
       }
     });
@@ -184,7 +174,6 @@ exports.changePin = (req, res) => {
   const pin = req.body.pin;
   const newPin = req.body.newpin;
   userModel.getUserById(id, (err, user) => {
-    // console.log(user.rows[0]);
     if (pin === user.rows[0].pin) {
       userModel.changePin(id, newPin, (err, result) => {
         console.log(newPin);
@@ -204,7 +193,6 @@ exports.changePin = (req, res) => {
 exports.changePhoneNumber = (req, res) => {
   const validation = validationResult(req);
   if (!validation.isEmpty()) {
-    // is empty menandakan tidak ada error
     console.log(validation.array());
     return response(res, 'Error occured', validation.array(), null, 400);
   }
@@ -221,7 +209,6 @@ exports.changePhoneNumber = (req, res) => {
 exports.addPhoneNumber = (req, res) => {
   const validation = validationResult(req);
   if (!validation.isEmpty()) {
-    // is empty menandakan tidak ada error
     console.log(validation.array());
     return response(res, 'Error occured', validation.array(), null, 400);
   }
@@ -238,7 +225,6 @@ exports.addPhoneNumber = (req, res) => {
 exports.transfer = (req, res) => {
   const validation = validationResult(req);
   if (!validation.isEmpty()) {
-    // is empty menandakan tidak ada error
     console.log(validation.array());
     return response(res, 'Error occured', validation.array(), null, 400);
   }
@@ -251,7 +237,6 @@ exports.transfer = (req, res) => {
         if (err) {
           return errorResponse(err, res);
         } else {
-          // console.log(result);
           profileModel.increaseBalance(result[0].amount, result[0].recipient_id, (err, result) => {
             if (err) return console.log(err);
           });

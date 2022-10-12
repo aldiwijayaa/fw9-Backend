@@ -25,7 +25,7 @@ const errorResponse = (err, res) => {
     const errRes = errorHandling('Recepient do not exist', 'repicient_id');
     return response(res, 'Error', errRes, null, 400);
   }
-  console.log(err); // untuk error handling
+  console.log(err);
   return response(res, 'Error', null, null, 400);
 };
 

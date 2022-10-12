@@ -13,15 +13,22 @@ exports.getTransactionById = (id, cb) => {
 };
 
 exports.getTransactionUser = (id, limit, offset = 0, cb) => {
-  db.query('SELECT * FROM transaction WHERE sender_id=$1 LIMIT $2 OFFSET $3', [id, limit, offset], (err, res) => {
-    console.log(res.rows);
-    cb(err, res);
-  });
+  db.query(
+    'SELECT transaction.id, transaction.time, transaction.type_id, transaction.amount, profile.picture, profile.fullname FROM transaction INNER JOIN profile ON transaction.recipient_id = profile.user_id WHERE sender_id=$1 ORDER BY time DESC LIMIT $2 OFFSET $3',
+    [id, limit, offset],
+    (err, res) => {
+      console.log(res.rows);
+      if (res) {
+        cb(err, res.rows);
+      } else {
+        console.log(err);
+      }
+    }
+  );
 };
 
 exports.countAllTransaction = (id, cb) => {
   db.query(`SELECT * FROM transaction WHERE sender_id=${id}`, (err, res) => {
-    // console.log(res.rowCount);
     cb(err, res.rowCount);
   });
 };
@@ -31,7 +38,6 @@ exports.createTransaction = (data, cb) => {
   const val = [data.amount, data.sender_id, data.recipient_id, data.notes, data.time, data.type_id];
   db.query(query, val, (err, res) => {
     if (err) {
-      // console.log(err);
       cb(err);
     } else {
       cb(err, res.rows);
@@ -40,6 +46,8 @@ exports.createTransaction = (data, cb) => {
 };
 
 exports.transfer = (id, data, cb) => {
+  console.log('ini data', data);
+  console.log('ini data', id);
   val = [];
   const filtered = {};
   const obj = {
@@ -64,9 +72,8 @@ exports.transfer = (id, data, cb) => {
   const finalResult = key.map((val, index) => `$${index + 1}`);
   const query = `INSERT INTO transaction(${key}) VALUES(${finalResult}) RETURNING *`;
   db.query(query, val, (err, res) => {
-    // console.log(res);
     if (err) {
-      // console.log(err);
+      console.log(err);
       cb(err);
     } else {
       cb(err, res.rows);
@@ -79,7 +86,6 @@ exports.editTransaction = (id, data, cb) => {
   const value = [data.amount, data.recipient_id, data.sender_id, data.notes, data.time, data.type_id, id];
   db.query(query, value, (err, res) => {
     if (res) {
-      // console.log(res);
       cb(err, res.rows);
     } else {
       console.log(err);

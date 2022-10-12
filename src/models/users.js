@@ -12,13 +12,16 @@ exports.getAllUsers = (keyword, limit = parseInt(LIMIT_DATA), offset = 0, sortBy
 
 exports.getUserById = (id, cb) => {
   db.query('SELECT * FROM users WHERE id=$1', [id], (err, res) => {
-    // console.log(res);
+    // console.log(res.rows);
+    // console.log(err);
     cb(err, res);
   });
 };
 
 exports.getUserByEmail = (email, cb) => {
-  db.query('SELECT * FROM users WHERE email=$1', [email], (err, res) => {
+  console.log(email);
+  db.query('SELECT * FROM users WHERE email=$1 ', [email], (err, res) => {
+    console.log(res.rows);
     cb(err, res);
   });
 };
@@ -67,7 +70,7 @@ exports.updateUser = (id, data, cb) => {
   const query = `UPDATE users SET ${finalResult} WHERE id=$1 RETURNING *`;
   db.query(query, val, (err, res) => {
     if (res) {
-      // console.log(res);
+      // console.log('ini dari model user saat create pin', res);
       cb(err, res.rows[0]);
     } else {
       console.log(err);
@@ -82,10 +85,10 @@ exports.changePassword = (id, data, cb) => {
   const query = `UPDATE users SET password=$2 WHERE id=$1 RETURNING *`;
   db.query(query, val, (err, res) => {
     if (res) {
-      console.log(res);
+      console.log('ini res', res.rows[0]);
       cb(err, res.rows[0]);
     } else {
-      console.log(err);
+      console.log('error', err);
       cb(err);
     }
   });
@@ -111,5 +114,21 @@ exports.deleteUser = (id, cb) => {
   const value = [id];
   db.query(query, value, (err, res) => {
     cb(res.rows);
+  });
+};
+
+exports.topup = (id, data, cb) => {
+  const query = 'UPDATE profile SET balance=balance + $2 WHERE user_id=$1 RETURNING balance';
+  const value = [id, data.amount];
+  db.query(query, value, (err, res) => {
+    cb(err, res.rows);
+  });
+};
+
+exports.checkEmail = (email, cb) => {
+  const query = 'SELECT id, email, username FROM users WHERE email=$1';
+  const value = [email];
+  db.query(query, value, (err, res) => {
+    cb(err, res.rows[0]);
   });
 };
